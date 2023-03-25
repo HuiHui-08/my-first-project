@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
@@ -34,8 +35,12 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.DataValidation;
+import org.apache.poi.ss.usermodel.DataValidationConstraint;
+import org.apache.poi.ss.usermodel.DataValidationHelper;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.util.CellRangeAddressList;
+import org.apache.poi.xssf.usermodel.XSSFDataValidationHelper;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import jxl.Sheet;
 import ntpc.bean.DBCon;
@@ -1434,6 +1439,19 @@ public class BTSchRoll extends HttpServlet {
 //            String[] textlist = {"大安區", "大同區", "信義區"};
 //            sheet = ParseXLSUtil.setHSSFValidation(sheetPro, city, 1, 11, 0, 0);
 //            sheet = ParseXLSUtil.setHSSFValidation(sheetPro, textlist, 1, 11, 1, 1);
+            
+            XSSFSheet sheet2 = workbook.getSheet(sheetName2);
+
+            // 在第 AW 行下方創建下拉式選單
+            int rowIndex = sheet2.getLastRowNum() + 1; // 最後一行的下一行
+            int columnIndex = 49; // 第 AW 列
+
+            // 設置下拉式選單的選項值
+            String[] options = {"軍公教人員","商業","工業","農林漁牧業","醫療業","服務業","家管","自由業","其他(自行輸入)"};
+            DataValidationHelper validationHelper = new XSSFDataValidationHelper(sheet2);
+            DataValidationConstraint constraint = validationHelper.createExplicitListConstraint(options);
+            CellRangeAddressList addressList = new CellRangeAddressList(rowIndex, rowIndex, columnIndex, columnIndex);
+            DataValidation dataValidation = validationHelper.createValidation(constraint, addressList);
             
             //設定標題列鎖定
             sheet.createFreezePane(0, 1, 0, 1);
